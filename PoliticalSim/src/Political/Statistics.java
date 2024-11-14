@@ -5,31 +5,36 @@ import java.util.*;
 public class Statistics {
 
 	private double standardDeviation;
-	private double median;
 	private double mean;
+	private double lowerBound;
+	private double upperBound;
+	
+	
 	private final double e = 2.71828;
-	private static final double INCREMENT = 0.000001; 
+	private final double INCREMENT = 0.000001; 
+	private final double confidenceConstant = 2.3263;
 	
 	
 	public String toString() {
-		
 		String stats = "mean: " + this.mean + " \n";
 		stats += "SD: " + this.standardDeviation + "\n";
 		return stats;	
 	}
 	
 	public double getAverage() {
-		
 		return this.mean;
 	}
 	
-	public double getStandardDeviation() {
-		
-		return this.standardDeviation;
+	public double getLowerBound() {
+		return this.lowerBound;
 	}
 	
-	public double getMedian() {
-		return this.median;
+	public double getUpperBound() {
+		return this.upperBound;
+	}
+	
+	public double getStandardDeviation() {
+		return this.standardDeviation;
 	}
 	
 	public double average(Calculations calc) {
@@ -45,7 +50,6 @@ public class Statistics {
 	
 	public double median(Calculations calc) {
 		double[] array = calc.getGeorgiaData();
-		
 		
 		for(int i = 0; i < array.length - 1; i++) {
 			int minIndex = i;
@@ -67,7 +71,6 @@ public class Statistics {
 			int middleIndex  = (int)array.length/2;
 			middle = array[middleIndex];
 		}
-		this.median = middle;
 		return middle;
 	}
 	
@@ -91,10 +94,29 @@ public class Statistics {
 		return SD;
 	}
 	
+	public void confidenceInterval(Calculations calc) {
+		double formula = confidenceConstant * (this.standardDeviation/Math.sqrt(calc.getGeorgiaData().length));
+			
+		this.upperBound = this.mean + formula;
+		this.lowerBound = this.mean - formula;
+	}
+	
+	public double randomMean() {
+		Random random = new Random(); 
+		double value = random.nextGaussian(this.mean, this.standardDeviation);
+	
+		while(value < lowerBound || value > upperBound) {
+			value = random.nextGaussian(this.mean, this.standardDeviation);
+		}
+		
+		this.mean = value; 
+		return value;
+	}
+	
 	public double probability() {
 		
 		double higherBound = 0;
-		double lowerBound = 0;
+		double minBound = 0;
 		double integral = 0;
 		double coefficient = Math.pow(this.standardDeviation * Math.sqrt(2 * Math.PI), -1);
 		double absoluteNumber = 0;
@@ -104,22 +126,24 @@ public class Statistics {
 			absoluteNumber = this.mean + (4 * this.standardDeviation);
 			
 			for(double i = 0; i < absoluteNumber; i+= INCREMENT) {
-				lowerBound = Math.pow(e, -0.5 * Math.pow((i - this.mean)/this.standardDeviation, 2));
+				minBound = Math.pow(e, -0.5 * Math.pow((i - this.mean)/this.standardDeviation, 2));
 				higherBound = Math.pow(e, -0.5 * Math.pow(((i + INCREMENT) - this.mean)/this.standardDeviation, 2));
-				integral += ((higherBound + lowerBound)/2) * INCREMENT;
+				integral += ((higherBound + minBound)/2) * INCREMENT;
 			}
 			 return coefficient * integral; 
 		} else {
 			absoluteNumber = this.mean - (4 * this.standardDeviation);
 			for(double i = absoluteNumber; i < 0; i+= INCREMENT) {
-				lowerBound = Math.pow(e, -0.5 * Math.pow((i - this.mean)/this.standardDeviation, 2));
+				minBound = Math.pow(e, -0.5 * Math.pow((i - this.mean)/this.standardDeviation, 2));
 				higherBound = Math.pow(e, -0.5 * Math.pow(((i + INCREMENT) - this.mean)/this.standardDeviation, 2));
-				integral += ((higherBound + lowerBound)/2) * INCREMENT;
+				integral += ((higherBound + minBound)/2) * INCREMENT;
 			}
 			 return coefficient * integral; 
 		}
 
 	}
+	
+	
 	
 	
 	
