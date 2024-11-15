@@ -12,55 +12,47 @@ public class Driver {
 		System.out.println("How many simulations would you like to run?");
 		int numberOfSimulations = scan.nextInt();
 		int counter = 0; 
+		//numberOfSimulations = numberOfSimulations - 1 + 1; 
 		
-		/*
-		System.out.println("\nUsing polls from RCP one week leading up the election in several key states: ");
-		System.out.println(georgiaData.toString());
-		System.out.println("Means: " + georgiaData.toString(stat.average(georgiaData)));
-		System.out.println("SD: " + georgiaData.toString(stat.standardDeviation(georgiaData)));
-		
-	
-		
-		System.out.println("Lower Bound: " + georgiaData.toString(stat.getLowerBound()));
-		System.out.println("Upper Bound: " + georgiaData.toString(stat.getUpperBound()));
-		System.out.println();
-		*/
-		
-	
 		stat.average(georgiaData);
 		stat.standardDeviation(georgiaData);
 		stat.confidenceInterval(georgiaData);
+		stat.updateTotalNumberSimulations(numberOfSimulations);
+		stat.updateEVFrequency();
+		
+		/*
+		System.out.println("Total number of sims: " + stat.getTotalNumberSimulations());
+		System.out.println("TEVF: " + stat.getTrumpEVFrequency().length);
+		System.out.println("HEVF: " + stat.getHarrisEVFrequency().length);
+		*/
+		
+	
+		
 		while(counter < numberOfSimulations) {
-			//System.out.println("Random mean: " + georgiaData.toString(stat.randomMean(georgiaData)));
-			//System.out.println("Probabilites: " + georgiaData.toString(stat.probability(georgiaData)));
-			georgiaData.toString(stat.randomMean(georgiaData));
-			
+		
+			double[] random = stat.randomMean(georgiaData);
+			stat.probability(georgiaData);
 			stat.simulation(georgiaData);
+			stat.cleanUpProb();
+			stat.cleanUpRandom();
+			stat.simulationProbability();
+			stat.electoralTally();
+			Statistics.updateNumberSimulations();
+			
+			
+			
+			//System.out.println("Sim number: " + Statistics.getNumberSimulations());
+			//System.out.println("Trump EV: " + georgiaData.toString(stat.getTrumpEVFrequency()));
+			//System.out.println("Harris EV: " + georgiaData.toString(stat.getHarrisEVFrequency()));
+			//System.out.println(georgiaData.toString(random));
+			System.out.printf("There is a %.3f", (100 * stat.simulationProbability()));
+			System.out.println(" percent that " + georgiaData.merge(random) + " occurs!");
 			System.out.println("Trump electoral votes: " + stat.getTrumpEV());
 			System.out.println("Harris electoral votes: " + stat.getHarrisEV());
+			System.out.println();
+			
 			stat.resetEV();
-			System.out.println();
-			
 			counter++;
-			
-			
-			/*
-			double[] value = stat.probability(georgiaData); 
-			String[] states = georgiaData.getStates();
-			
-			System.out.println();
-			
-			double[] temp = stat.getRandomizedMeans();
-			for(int i = 0; i < temp.length; i++) {
-				if(temp[i] > 0) {
-					System.out.println("Trumps chances of winning " + states[i] + ": " + 100 * value[i]);
-				} else if (temp[i] < 0) {
-					System.out.println("Harris chances of winning " + states[i] + ": " + 100 * value[i]);
-				} else {
-					System.out.println("They both have an equal chance in " + states[i]);
-				}
-			}
-			*/
 			
 		}
 		System.out.println("Harris won: " + stat.getHarrisWins() + " out of the " + numberOfSimulations + " simulations!");
@@ -68,5 +60,6 @@ public class Driver {
 		scan.close();
 		
 	}
-
+	
+	
 }

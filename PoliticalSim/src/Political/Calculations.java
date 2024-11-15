@@ -1,7 +1,7 @@
 package Political;
 
 
-public class Calculations  {
+public class Calculations extends Statistics  {
 	
 	private final double[] arizonaPolls = {5, 2, 3, 2, 4, 1, 1, 2, 8, 0};
 	private final double[] georgiaPolls = {2, 1, 1, -1, 1, -1, 5, 1, 2, 2};
@@ -18,7 +18,7 @@ public class Calculations  {
 	
 	
 	public double[][] getData() {
-		double[][] temp = this.pollingData;
+		double[][] temp = this.pollingData; 
 		return temp;
 	}
 	
@@ -41,21 +41,41 @@ public class Calculations  {
 				}
 			}
 			pollingContents += "\n";
-			
 		}
 		return pollingContents;
 	}
 	
 	public String toString(double[] array) {
-		String pollingContents = "{";
+		String pollingContents = "";
 		for(int i = 0; i < array.length; i++) {
 			if(i < array.length - 1) {
 				pollingContents += array[i] + ", ";
 			} else {
-				pollingContents += array[i] + "}";
+				pollingContents += array[i];
 			}
 		}
 		return pollingContents;
+	}
+	
+	public String merge(double[] array) {
+		
+		
+		for(int i = 0; i < array.length; i++) {
+			array[i] = Math.round(array[i] * 1000d) / 1000d;
+		}
+		
+		String contents = "";
+		for(int i = 0; i < states.length; i++) {
+			if(i < states.length - 1) {
+				contents += states[i] + ": " + array[i]; 
+				contents += ", ";
+			} else {
+				contents += states[i] + ": " + array[i];
+			}
+		}
+		return contents; 
+		
+		
 	}
 	
 	
